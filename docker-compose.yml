@@ -1,51 +1,23 @@
-APPNAME:
-    env_file: .env
-    image: 
-    container_name: APPNAME
-    hostname: APPNAME
-    privileged: true
+services:
+  flaresolverr: 
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
     networks:
-      - admin
-    volumes:
-      - ./config:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /dev/fuse:/dev/fuse
+      - proxy
+    hostname: flaresolverr
+    dns: 
+      - 172.22.20.1
+      - 8.8.8.8
     environment:
-      - VIRTUAL_HOST=APPNAME.admin.pknw1.co.uk
-      - VIRTUAL_PORT=9000
-      - APP_GROUP=Core
-      - APP_LOGO=https://static-00.iconduck.com/assets.00/portainer-icon-1465x2048-t155ekm0.png
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 200M
+      - LOG_LEVEL=info
+      - APP_GROUP=Content
+      - APP_LOGO=https://avatars.githubusercontent.com/u/75936191?s=400&v=4
+      - VIRTUAL_HOST=flaresolverr.admin.pknw1.co.uk
+      - VIRTUAL_PORT=8191
+    ports:
+      - 172.22.20.1:8191:8191
+  
 
 networks:
-  dmz:
-    name: ${DMZ_NETWORK} 
-    ipam:
-      config:
-        - subnet: ${DMZ_NETWORK_SUBNET}
-          gateway: ${DMZ_NETWORK_ROUTE}
-
-  public:
-    name: public  
-    ipam:
-      config:
-        - subnet: ${PUBLIC_NETWORK_SUBNET}
-          gateway: ${PUBLIC_NETWORK_ROUTE}
-
-  secure:
-    name: secure
-    ipam:
-      config:
-        - subnet: ${SECURE_NETWORK_SUBNET}
-          gateway: ${SECURE_NETWORK_ROUTE}
-
-  admin:
-    name: admin      
-    ipam:
-      config:
-        - subnet: ${ADMIN_NETWORK_SUBNET}
-          gateway: ${ADMIN_NETWORK_ROUTE}
+  proxy:
+    external: true
